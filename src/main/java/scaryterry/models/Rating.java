@@ -49,6 +49,10 @@ public class Rating {
 	public void setRatedImageId(Integer ratedImageId) {
 		this.ratedImageId = ratedImageId;
 	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	
 	
 	

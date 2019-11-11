@@ -1,6 +1,7 @@
 package scaryterry.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import scaryterry.dtos.ImageRatingsDTO;
 import scaryterry.models.Rating;
 import scaryterry.repositories.RatingRepository;
 
@@ -22,9 +24,9 @@ public class RatingImageController {
 	private RatingRepository ratingRepo;
 	
 	@GetMapping("")
-	public ResponseEntity<List<Rating>> getRatings(
+	public ResponseEntity<ImageRatingsDTO> getRatings(
 			@PathVariable("image-id") Integer imageId){
-		return ResponseEntity.ok(ratingRepo.findByRatedImageId(imageId));
+		return ResponseEntity.ok(new ImageRatingsDTO(ratingRepo.findByRatedImageId(imageId)));
 	}
 	
 	@PostMapping("")
@@ -32,6 +34,9 @@ public class RatingImageController {
 			@RequestBody Rating rating,
 			@PathVariable("image-id") Integer imageId){
 		rating.setRatedImageId(imageId);
+		Optional<Rating> oldRate = ratingRepo.findByRatedImageIdAndRatedById(imageId, rating.getRatedById());
+		if(oldRate.isPresent())
+			rating.setId(oldRate.get().getId());
 		return ResponseEntity.ok(ratingRepo.save(rating));
 	}
 }
